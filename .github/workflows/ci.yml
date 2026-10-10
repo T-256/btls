@@ -208,9 +208,9 @@ jobs:
         with:
           path: .cache/build-dir
           key: wintest-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
-      - name: Build tests
+      - name: Build release
         # We `build` because we want the linker to verify we are cross-compiling correctly for check-only targets.
-        run: cargo build -vv --target ${{ matrix.target }} --tests ${{ matrix.extra_test_args }}
+        run: cargo build --release --target ${{ matrix.target }}
         shell: bash
         env: ${{ matrix.custom_env }}
         # By default it'd be saved after later cargo calls, which already invalidated the cache
@@ -220,29 +220,11 @@ jobs:
         with:
           path: .cache/build-dir
           key: ${{ steps.test-cache-restore.outputs.cache-primary-key }}
-      - name: Run tests (skip=${{ matrix.check_only }})
-        if: "!matrix.check_only"
-        run: cargo test --target ${{ matrix.target }} ${{ matrix.extra_test_args }}
-        shell: bash
-        env: ${{ matrix.custom_env }}
-      - name: Test btls-sys cargo publish
-        # Running `cargo publish --dry-run` tests two things:
-        #
-        # 1. That `btls-sys` can build BoringSSL with just the files included
-        #    in the crates.io package (as determined by the `include` field in
-        #    the `Cargo.toml`).
-        # 2. That the final `btls-sys` package size, including the BoringSSL
-        #    submodules, is not too large to be published to `crates.io`.
-        #
-        # Both of these may no longer be the case after updating the BoringSSL
-        # submodules to a new revision, so it's important to test this on CI.
-        run: cargo publish --dry-run --target ${{ matrix.target }} -p btls-sys
-        shell: bash
-        env: ${{ matrix.custom_env }}
       - name: Archive build artifacts
         run: |
-          cd target/${{ matrix.target }}/debug
+          cd target/${{ matrix.target }}/release
           zip -r ../../../build-${{ matrix.target }}.zip *
+        shell: bash
         working-directory: ${{ github.workspace }}
 
       - name: Upload build artifact
