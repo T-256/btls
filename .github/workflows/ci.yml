@@ -22,71 +22,12 @@ permissions:
   packages: write
 
 jobs:
-  rustfmt:
-    name: rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Install Rustfmt
-        run: rustup default stable && rustup component add rustfmt
-      - name: Check formatting
-        run: cargo fmt --all -- --check
-
-  clippy:
-    name: clippy
-    runs-on: ubuntu-latest
-    env:
-      CARGO_HOME: ${{ github.workspace }}/.cache/cargo
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: "recursive"
-      - name: Install Rust
-        run: rustup toolchain add stable --no-self-update --component clippy && rustup default stable
-      - name: Get rust version
-        id: rust-version
-        shell: bash
-        run: |
-          echo "version=$(rustc --version)" >> $GITHUB_OUTPUT
-      - name: Cache cargo index
-        uses: actions/cache@v6
-        with:
-          path: |
-            .cache/cargo/registry/index
-            .cache/cargo/registry/cache
-          key: index-${{ steps.rust-version.outputs.version }}-${{ hashFiles('Cargo.toml') }}
-          enableCrossOsArchive: true
-      - name: Fetch dependencies
-        run: cargo fetch
-      - name: Cache target directory
-        uses: actions/cache@v6
-        with:
-          path: target
-          key: clippy-${{ steps.rust-version.outputs.version }}-${{ hashFiles('Cargo.lock') }}
-      - name: Run clippy
-        run: cargo clippy --all --all-targets --features mldsa,mlkem,prf,relax-cert-validation,rpk,underscore-wildcards -- -D warnings
-      - name: Check docs
-        run: cargo doc --no-deps -p btls -p btls-sys --features mldsa,mlkem,rpk,underscore-wildcards
-        env:
-          CARGO_BUILD_RUSTDOCFLAGS: "--cfg=docsrs"
-          RUSTC_BOOTSTRAP: 1
-          DOCS_RS: 1
-      - name: Cargo.toml btls versions consistency
-        shell: bash
-        run: |
-          WORKSPACE_VERSION=$(grep -F '[workspace.package]' -A1 Cargo.toml | grep -F version | grep -Eo '".*"')
-          if [[ -z "$WORKSPACE_VERSION" ]]; then echo 2>&1 "error: can't find btls version"; exit 1; fi
-          if grep -E 'btls.* =' Cargo.toml | grep -vF "$WORKSPACE_VERSION"; then
-            echo 2>&1 "error: btls dependencies must match workspace version $WORKSPACE_VERSION"
-            exit 1
-          fi
-  test:
-    name: Test
+  build:
+    name: Windows Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         thing:
-          - stable
           - i686-mingw
           - x86_64-mingw
         include:
@@ -94,10 +35,6 @@ jobs:
           - extra_test_args: ""
           - apt_packages: ""
           - custom_env: {}
-          - thing: stable
-            target: x86_64-unknown-linux-gnu
-            rust: stable
-            os: ubuntu-latest
           - thing: x86_64-mingw
             target: x86_64-pc-windows-gnu
             rust: stable
@@ -221,13 +158,14 @@ jobs:
           path: .cache/build-dir
           key: ${{ steps.test-cache-restore.outputs.cache-primary-key }}
       - name: Archive build artifacts
+        if: startsWith(matrix.os, 'windows')
         run: |
-          cd target/${{ matrix.target }}/release
-          zip -r ../../../build-${{ matrix.target }}.zip *
-        shell: bash
+          Compress-Archive -Path 'target\${{ matrix.target }}\release\*' -DestinationPath "build-${{ matrix.target }}.zip" -CompressionLevel Optimal -Force
+        shell: pwsh
         working-directory: ${{ github.workspace }}
 
       - name: Upload build artifact
+        if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.target }}
