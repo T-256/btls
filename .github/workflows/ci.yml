@@ -47,6 +47,7 @@ jobs:
               CPLUS_INCLUDE_PATH: "C:\\msys64\\usr\\include"
               LIBRARY_PATH: "C:\\msys64\\usr\\lib"
               RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
+              BORING_BSSL_INSTALL_DIR: "BSSL"
             # CI's Windows doesn't have required root certs
             extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
           - thing: i686-mingw
@@ -58,6 +59,7 @@ jobs:
               RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
               CMAKE_GENERATOR: "MinGW Makefiles"
               COLLECT_GCC: null
+              BORING_BSSL_INSTALL_DIR: "BSSL"
             # CI's Windows doesn't have required root certs
             extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
     env:
@@ -147,7 +149,7 @@ jobs:
           key: wintest-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
       - name: Build release
         # We `build` because we want the linker to verify we are cross-compiling correctly for check-only targets.
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --target ${{ matrix.target }}
         shell: bash
         env: ${{ matrix.custom_env }}
         # By default it'd be saved after later cargo calls, which already invalidated the cache
@@ -160,7 +162,7 @@ jobs:
       - name: Archive build artifacts
         if: startsWith(matrix.os, 'windows')
         run: |
-          Compress-Archive -Path 'target\${{ matrix.target }}\release\*' -DestinationPath "build-${{ matrix.target }}.zip" -CompressionLevel Optimal -Force
+          Compress-Archive -Path 'BSSL' -DestinationPath "BSSL-${{ matrix.target }}.zip" -CompressionLevel Optimal -Force
         shell: pwsh
         working-directory: ${{ github.workspace }}
 
@@ -168,6 +170,6 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.target }}
-          path: build-${{ matrix.target }}.zip
+          name: BSSL-${{ matrix.target }}
+          path: BSSL-${{ matrix.target }}.zip
           retention-days: 1
