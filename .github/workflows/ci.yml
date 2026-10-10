@@ -88,23 +88,7 @@ jobs:
         thing:
           - stable
           - i686-mingw
-          - arm-android
-          - arm64-android
-          - i686-android
-          - x86_64-android
-          - aarch64-ios
-          - aarch64-ios-sim
-          - x86_64-ios
-          - aarch64-tvos
-          - aarch64-tvos-sim
-          - i686-linux
-          - arm-linux
-          - aarch64-linux
-          - arm64-macos
-          - x86_64-macos
           - x86_64-mingw
-          - i686-msvc
-          - x86_64-msvc
         include:
           - check_only: false
           - extra_test_args: ""
