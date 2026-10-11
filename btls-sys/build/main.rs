@@ -713,6 +713,10 @@ fn install_artifacts(
     fs::create_dir(&lib_dir)?;
 
     for lib in ["libcrypto.a", "libssl.a", "bcm.o"] {
+        eprintln!(
+            "copying {:?} into {:?}..................",
+            bssl_build_dir.join(lib), lib_dir.join(lib)
+        );
         if !config.features.fips && lib == "bcm.o" {
             continue;
         }
