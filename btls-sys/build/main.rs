@@ -709,10 +709,10 @@ fn install_artifacts(
     };
     let bssl_build_dir = build_boringssl_or_get_prebuilt(config);
 
-    let paths = fs::read_dir(bssl_build_dir).unwrap();
+    let paths = fs::read_dir(bssl_build_dir.join("Debug")).unwrap();
 
     for path in paths {
-        eprintln!("bssl_build_dir content: {}", path.unwrap().path().display())
+        eprintln!("bssl_build_dir/Debug content: {}", path.unwrap().path().display())
     }
 
     panic!("panic");
