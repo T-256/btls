@@ -718,7 +718,7 @@ fn install_artifacts(
     let lib_dir = install_dir.join("lib");
     fs::create_dir(&lib_dir)?;
 
-    for lib in ["libcrypto.a", "libssl.a", "bcm.o"] {
+    for lib in ["crypto.lib", "ssl.lib", "bcm.o"] {
         eprintln!(
             "copying {:?} into {:?}..................",
             bssl_build_dir.join("Debug").join(lib), lib_dir.join(lib)
