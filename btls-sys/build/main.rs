@@ -712,7 +712,7 @@ fn install_artifacts(
     let paths = fs::read_dir(bssl_build_dir).unwrap();
 
     for path in paths {
-        println!("bssl_build_dir content: {}", path.unwrap().path().display())
+        eprintln!("bssl_build_dir content: {}", path.unwrap().path().display())
     }
 
     let lib_dir = install_dir.join("lib");
