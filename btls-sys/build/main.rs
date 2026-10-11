@@ -715,20 +715,18 @@ fn install_artifacts(
         eprintln!("bssl_build_dir/Debug content: {}", path.unwrap().path().display())
     }
 
-    panic!("panic");
-
     let lib_dir = install_dir.join("lib");
     fs::create_dir(&lib_dir)?;
 
     for lib in ["libcrypto.a", "libssl.a", "bcm.o"] {
         eprintln!(
             "copying {:?} into {:?}..................",
-            bssl_build_dir.join(lib), lib_dir.join(lib)
+            bssl_build_dir.join("Debug").join(lib), lib_dir.join(lib)
         );
         if !config.features.fips && lib == "bcm.o" {
             continue;
         }
-        fs::copy(bssl_build_dir.join(lib), lib_dir.join(lib))?;
+        fs::copy(bssl_build_dir.join("Debug").join(lib), lib_dir.join(lib))?;
     }
 
     fs_extra::dir::copy(get_include_path(config)?, &install_dir, &Default::default())?;

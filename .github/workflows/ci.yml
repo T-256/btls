@@ -42,6 +42,7 @@ jobs:
             rust: stable-x86_64-msvc
             os: windows-latest
             custom_env:
+              BORING_BSSL_INSTALL_DIR: "D:\\BSSL"
               RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
               RUSTFLAGS: -Dwarnings -C target-feature=+crt-static
             # CI's Windows doesn't have required root certs
