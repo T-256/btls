@@ -59,7 +59,7 @@ jobs:
               RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
               CMAKE_GENERATOR: "MinGW Makefiles"
               COLLECT_GCC: null
-              BORING_BSSL_INSTALL_DIR: "BSSL"
+              BORING_BSSL_INSTALL_DIR: "${{ github.workspace }}\\BSSL"
             # CI's Windows doesn't have required root certs
             extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
     env:
@@ -150,7 +150,7 @@ jobs:
       - name: create BSSL empty dir
         if: startsWith(matrix.os, 'windows')
         run: |
-          New-Item -ItemType Directory -Path "BSSL"
+          New-Item -ItemType Directory -Path "${{ github.workspace }}\\BSSL"
         shell: pwsh
         working-directory: ${{ github.workspace }}
       - name: Build release
@@ -169,7 +169,7 @@ jobs:
       - name: Archive build artifacts
         if: startsWith(matrix.os, 'windows')
         run: |
-          Compress-Archive -Path 'BSSL' -DestinationPath "BSSL-${{ matrix.target }}.zip" -CompressionLevel Optimal -Force
+          Compress-Archive -Path '${{ github.workspace }}\\BSSL' -DestinationPath "BSSL-${{ matrix.target }}.zip" -CompressionLevel Optimal -Force
         shell: pwsh
         working-directory: ${{ github.workspace }}
 
