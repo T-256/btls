@@ -709,6 +709,12 @@ fn install_artifacts(
     };
     let bssl_build_dir = build_boringssl_or_get_prebuilt(config);
 
+    let paths = fs::read_dir(bssl_build_dir).unwrap();
+
+    for path in paths {
+        println!("bssl_build_dir content: {}", path.unwrap().path().display())
+    }
+
     let lib_dir = install_dir.join("lib");
     fs::create_dir(&lib_dir)?;
 
