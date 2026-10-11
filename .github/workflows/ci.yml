@@ -28,7 +28,9 @@ jobs:
     strategy:
       matrix:
         thing:
-          - i686-mingw
+          - x86_64-msvc-static
+          - i686-msvc-static
+          # - i686-mingw
           # - x86_64-mingw
         include:
           - check_only: false
@@ -50,16 +52,35 @@ jobs:
           #     BORING_BSSL_INSTALL_DIR: "BSSL"
           #   # CI's Windows doesn't have required root certs
           #   extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
-          - thing: i686-mingw
-            target: i686-pc-windows-gnu
-            rust: stable
+          # - thing: i686-mingw
+          #   target: i686-pc-windows-gnu
+          #   rust: stable
+          #   os: windows-latest
+          #   check_only: true
+          #   custom_env:
+          #     RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
+          #     CMAKE_GENERATOR: "MinGW Makefiles"
+          #     COLLECT_GCC: null
+          #     BORING_BSSL_INSTALL_DIR: "C:\\BSSL"
+          #   # CI's Windows doesn't have required root certs
+          #   extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
+          - thing: i686-msvc-static
+            target: i686-pc-windows-msvc
+            rust: stable-x86_64-msvc
             os: windows-latest
-            check_only: true
             custom_env:
               RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
-              CMAKE_GENERATOR: "MinGW Makefiles"
-              COLLECT_GCC: null
-              BORING_BSSL_INSTALL_DIR: "C:\\BSSL"
+              RUSTFLAGS: -Dwarnings -C target-feature=+crt-static
+              CXXFLAGS: -msse2
+            # CI's Windows doesn't have required root certs
+            extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
+          - thing: x86_64-msvc-static
+            target: x86_64-pc-windows-msvc
+            rust: stable-x86_64-msvc
+            os: windows-latest
+            custom_env:
+              RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
+              RUSTFLAGS: -Dwarnings -C target-feature=+crt-static
             # CI's Windows doesn't have required root certs
             extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
     env:
