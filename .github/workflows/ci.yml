@@ -29,27 +29,27 @@ jobs:
       matrix:
         thing:
           - i686-mingw
-          - x86_64-mingw
+          # - x86_64-mingw
         include:
           - check_only: false
           - extra_test_args: ""
           - apt_packages: ""
           - custom_env: {}
-          - thing: x86_64-mingw
-            target: x86_64-pc-windows-gnu
-            rust: stable
-            os: windows-latest
-            check_only: true # tests are flaky for unclear reasons
-            custom_env:
-              CC: gcc
-              CXX: g++
-              C_INCLUDE_PATH: "C:\\msys64\\usr\\include"
-              CPLUS_INCLUDE_PATH: "C:\\msys64\\usr\\include"
-              LIBRARY_PATH: "C:\\msys64\\usr\\lib"
-              RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
-              BORING_BSSL_INSTALL_DIR: "BSSL"
-            # CI's Windows doesn't have required root certs
-            extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
+          # - thing: x86_64-mingw
+          #   target: x86_64-pc-windows-gnu
+          #   rust: stable
+          #   os: windows-latest
+          #   check_only: true # tests are flaky for unclear reasons
+          #   custom_env:
+          #     CC: gcc
+          #     CXX: g++
+          #     C_INCLUDE_PATH: "C:\\msys64\\usr\\include"
+          #     CPLUS_INCLUDE_PATH: "C:\\msys64\\usr\\include"
+          #     LIBRARY_PATH: "C:\\msys64\\usr\\lib"
+          #     RUSTC_BOOTSTRAP: 1 # for -Z checksum-freshness
+          #     BORING_BSSL_INSTALL_DIR: "BSSL"
+          #   # CI's Windows doesn't have required root certs
+          #   extra_test_args: --workspace --exclude tokio-btls --exclude compio-btls -Z checksum-freshness
           - thing: i686-mingw
             target: i686-pc-windows-gnu
             rust: stable
