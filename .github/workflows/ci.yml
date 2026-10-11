@@ -147,10 +147,17 @@ jobs:
         with:
           path: .cache/build-dir
           key: wintest-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+      - name: create BSSL empty dir
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          New-Item -ItemType Directory -Path "BSSL"
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
       - name: Build release
         # We `build` because we want the linker to verify we are cross-compiling correctly for check-only targets.
         run: cargo build --target ${{ matrix.target }}
         shell: bash
+        working-directory: ${{ github.workspace }}
         env: ${{ matrix.custom_env }}
         # By default it'd be saved after later cargo calls, which already invalidated the cache
       - name: Cache deps in Windows tests
