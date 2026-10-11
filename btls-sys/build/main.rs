@@ -715,6 +715,8 @@ fn install_artifacts(
         eprintln!("bssl_build_dir content: {}", path.unwrap().path().display())
     }
 
+    panic!("panic");
+
     let lib_dir = install_dir.join("lib");
     fs::create_dir(&lib_dir)?;
 
